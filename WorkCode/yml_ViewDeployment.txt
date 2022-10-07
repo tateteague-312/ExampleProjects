@@ -1,0 +1,44 @@
+# Deploy database views to Snowflake via SnowSQL
+
+trigger:
+  branches:
+    include:
+    - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+- group: SF-Connect
+steps:
+- task: AzureKeyVault@2
+  inputs:
+    azureSubscription: 'Liv-DS (88d26662-5772-437d-b155-faa52db382c8)'
+    KeyVaultName: 'insightsTeam'
+    SecretsFilter: '*'
+    RunAsPreJob: false
+- task: Bash@3
+  env:
+    SNOWSQL_DEST: ~/snowflake
+    SNOWSQL_ACCOUNT: $(SF_ACCOUNT)
+    SNOWSQL_USER: $(SnowUser)
+    SNOWSQL_PWD: $(SnowPass)
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo 'Starting bash task'
+      echo 'Step 1: Installing SNOWSQL'
+      
+      curl -O https://sfc-repo.azure.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.21-linux_x86_64.bash
+      SNOWSQL_DEST=~/snowflake SNOWSQL_LOGIN_SHELL=~/.profile bash snowsql-1.2.21-linux_x86_64.bash
+      
+      echo 'Step 2: Creating  HHI view'
+      ~/snowflake/snowsql -f HHI_NewExecutedLeases.sql -r LIV_ANALYST -w LIV_ANALYST_WH 
+      echo 'Step 3: Creating  Migration view'
+      ~/snowflake/snowsql -f residentMigration.sql -r LIV_ANALYST -w LIV_ANALYST_WH 
+      echo 'Step 4: Creating  Delinquency view'
+      ~/snowflake/snowsql -f Delinquency.sql -r LIV_ANALYST -w LIV_ANALYST_WH 
+      echo 'Step 5: Creating  LeaseTradeOutOrder view'
+      ~/snowflake/snowsql -f tradeOutLeaseOrder.sql -r LIV_ANALYST -w LIV_ANALYST_WH 
+      echo 'Step 5: Creating  Rent Roll Base Report view'
+      ~/snowflake/snowsql -f RentRollBaseReport.sql -r LIV_ANALYST -w LIV_ANALYST_WH 
