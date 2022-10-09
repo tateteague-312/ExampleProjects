@@ -13,8 +13,8 @@ variables:
 steps:
 - task: AzureKeyVault@2
   inputs:
-    azureSubscription: 'Liv-DS (88d26662-5772-437d-b155-faa52db382c8)'
-    KeyVaultName: 'insightsTeam'
+    azureSubscription: '***SubscriptionResourceName***'
+    KeyVaultName: '***ResourceName***'
     SecretsFilter: '*'
     RunAsPreJob: false
 - task: Bash@3
@@ -33,12 +33,12 @@ steps:
       SNOWSQL_DEST=~/snowflake SNOWSQL_LOGIN_SHELL=~/.profile bash snowsql-1.2.21-linux_x86_64.bash
       
       echo 'Step 2: Creating  HHI view'
-      ~/snowflake/snowsql -f HHI_NewExecutedLeases.sql -r LIV_ANALYST -w LIV_ANALYST_WH 
+      ~/snowflake/snowsql -f HHI_NewExecutedLeases.sql -r rollName -w warehouseName 
       echo 'Step 3: Creating  Migration view'
-      ~/snowflake/snowsql -f residentMigration.sql -r LIV_ANALYST -w LIV_ANALYST_WH 
+      ~/snowflake/snowsql -f residentMigration.sql -r rollName -w warehouseName 
       echo 'Step 4: Creating  Delinquency view'
-      ~/snowflake/snowsql -f Delinquency.sql -r LIV_ANALYST -w LIV_ANALYST_WH 
+      ~/snowflake/snowsql -f Delinquency.sql -r rollName -w warehouseName 
       echo 'Step 5: Creating  LeaseTradeOutOrder view'
-      ~/snowflake/snowsql -f tradeOutLeaseOrder.sql -r LIV_ANALYST -w LIV_ANALYST_WH 
+      ~/snowflake/snowsql -f tradeOutLeaseOrder.sql -r rollName -w warehouseName 
       echo 'Step 5: Creating  Rent Roll Base Report view'
-      ~/snowflake/snowsql -f RentRollBaseReport.sql -r LIV_ANALYST -w LIV_ANALYST_WH 
+      ~/snowflake/snowsql -f RentRollBaseReport.sql -r rollName -w warehouseName 
