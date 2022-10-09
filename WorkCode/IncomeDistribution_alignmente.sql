@@ -33,11 +33,7 @@ create or replace view LIV_SANDBOX.LC.HOUSEHOLDINCOME_VW(
 --	$$ |  $$ |$$ |  $$ |/ $$   |         $$/          
 --	$$/   $$/ $$/   $$/ $$$$$$/                  
 -- 
---	Derivation from original HouseHold Income Query that adds in, YS Effective Rents, whether the resident renewed & Duration of each resident
---  See Readme.txt in Repo for known issues, limitations and scope definition
---
---
--- Author: Originally created by Matt L. --> Greatly Improved by Tate Teague ;)
+
 --
 
 
